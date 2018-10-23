@@ -19,7 +19,7 @@ def gpu_config(gpu_num):
     KTF.set_session(sess)
     print('GPU config done!')
 
-def get_train_data(data_dir):
+def get_train_data(data_dir,cv_ratio=0.1):
     texts    = []
     tags     = []
     
@@ -51,13 +51,14 @@ def get_train_data(data_dir):
     split_chars = ['。', '！', '？', '，']
     train_num   = 0
     dev_num     = 0
-    
+    doc_dev_num = int(len(texts) * cv_ratio)
+
     train_file = 'data/ruijin_train.data'
     if os.path.exists(train_file):
         os.remove(train_file)
 
     with open(train_file, 'a') as f:
-        for k in range(len(texts) - 1):
+        for k in range(len(texts) - doc_dev_num):
             text_ = texts[k]
             tag_  = tags[k]
             for p in range(len(text_)):
@@ -75,7 +76,7 @@ def get_train_data(data_dir):
     if os.path.exists(dev_file):
         os.remove(dev_file)
     with open(dev_file, 'a') as f:
-        for k in range(len(texts) - 1, len(texts)):
+        for k in range(len(texts) - doc_dev_num, len(texts)):
             text_ = texts[k]
             tag_  = tags[k]
             for p in range(len(text_)):
@@ -92,4 +93,4 @@ def get_train_data(data_dir):
     return train_num, dev_num
 
 if __name__ == '__main__':
-    train_num, dev_num = get_train_data(data_dir='data/ruijin_round1_train1_20181010/')
+    train_num, dev_num = get_train_data(data_dir='data/raw/train/')

@@ -8,7 +8,9 @@ import platform
 def load_data():
     train = _parse_data(open('data/ruijin_train.data', 'rb'))
     test = _parse_data(open('data/ruijin_dev.data', 'rb'))
-    word_counts = Counter(row[0] for sample in train for row in sample)
+    
+    word_counts = Counter(row[0] for sample in train+test for row in sample)
+    
     vocab = [w for w, f in iter(word_counts.items()) if f >= 2]
     
     word2idx = dict((w, i+2) for i, w in enumerate(vocab))
@@ -16,7 +18,7 @@ def load_data():
     word2idx['PAD'] = 0
     word2idx['UNK'] = 1
     
-    chunk_tags = ['O', 'B-Disease', 'I-Disease', 'B-Reason', 'I-Reason', "B-Symptom", "I-Symptom", "B-Test", "I-Test", "B-Test_Value", "I-Test_Value", "B-Drug", "I-Drug", "B-Frequency", "I-Frequency", "B-Amount", "I-Amount", "B-Treatment", "I-Treatment", "B-Operation", "I-Operation", "B-Method", "I-Method", "B-Anatomy", "I-Anatomy", "B-Level", "I-Level", "B-Duration", "I-Duration"]
+    chunk_tags = ['O', 'B-Disease', 'I-Disease', 'B-Reason', 'I-Reason', "B-Symptom", "I-Symptom", "B-Test", "I-Test", "B-Test_Value", "I-Test_Value", "B-Drug", "I-Drug", "B-Frequency", "I-Frequency", "B-Amount", "I-Amount", "B-Treatment", "I-Treatment", "B-Operation", "I-Operation", "B-Method", "I-Method", "B-SideEff","I-SideEff","B-Anatomy", "I-Anatomy", "B-Level", "I-Level", "B-Duration", "I-Duration"]
 
     with open('data/dict.pkl', 'wb') as outp:
         pickle.dump((word2idx,chunk_tags), outp)
@@ -47,11 +49,18 @@ def _process_data(data, word2idx, chunk_tags, maxlen=None, onehot=False):
     if maxlen is None:
         maxlen = max(len(s) for s in data)
     
-
+    
     x = [[word2idx.get(w[0], 1) for w in s] for s in data]
 
     y_chunk = [[chunk_tags.index(w[1]) for w in s] for s in data]
     
+    # debug 
+    #y_chunk = []
+    #for i,s in enumerate(data):
+    #    for j,w in enumerate(s):
+    #        print(i,j)
+    #        y_chunk.append(chunk_tags.index(w[1]))
+
     x = pad_sequences(x, maxlen)  # left padding
 
     y_chunk = pad_sequences(y_chunk, maxlen, value=-1)
