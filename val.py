@@ -58,7 +58,7 @@ def savefile(tag_data,result_tags, predict_text):
     for i in range(1, len(tags)):
         cur = tags[i]
         if cur != prev:
-            end = i-1
+            end = i
             if prev != 'O':
                 num += 1
                 content = predict_text[start:end]
