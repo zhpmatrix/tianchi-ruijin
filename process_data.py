@@ -23,8 +23,8 @@ def load_data():
     with open('data/dict.pkl', 'wb') as outp:
         pickle.dump((word2idx,chunk_tags), outp)
 
-    train = _process_data(train, word2idx, chunk_tags)
-    test = _process_data(test, word2idx, chunk_tags)
+    train = _process_data(train, word2idx, chunk_tags, onehot=True)
+    test = _process_data(test, word2idx, chunk_tags, onehot=True)
     return train, test, (word2idx, chunk_tags)
 
 
@@ -63,7 +63,7 @@ def _process_data(data, word2idx, chunk_tags, maxlen=None, onehot=False):
 
     x = pad_sequences(x, maxlen)  # left padding
 
-    y_chunk = pad_sequences(y_chunk, maxlen, value=-1)
+    y_chunk = pad_sequences(y_chunk, maxlen, value=0)
 
     if onehot:
         y_chunk = numpy.eye(len(chunk_tags), dtype='float32')[y_chunk]

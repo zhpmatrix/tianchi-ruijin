@@ -21,7 +21,7 @@ def create_model(embed_dim, birnn_units,train=True):
     model.add(Bidirectional(LSTM(birnn_units // 2, return_sequences=True)))
     
     # default learn mode is 'join'
-    crf = CRF(len(chunk_tags), sparse_target=True)
+    crf = CRF(len(chunk_tags), sparse_target=False)
     #crf = CRF(len(chunk_tags), sparse_target=True, learn_mode='marginal', test_mode='marginal')
     
     model.add(crf)
